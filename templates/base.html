@@ -1,0 +1,39 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title%} Meine Website {% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    
+
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <a href="/"><img src="{% static 'img/logo.png' %}" alt="My image" class="logo_img"></a>  
+        </div>
+
+        <div class="navbar_items">
+
+            {% if user.is_authenticated == False %}
+                <button type="submit" class="btn"><a href=" {% url "register" %} ">Register</a></button>
+                <button type="submit" class="btn"><a href=" {% url "login" %} ">Login</a></button>
+            {% else %}
+                <form action="{% url "logout" %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn">Logout</button>
+                </form>
+            {% endif %}
+    </div>
+    </nav>
+
+    {% block content%}
+
+    {% endblock %}
+
+
+</body>
+</html>

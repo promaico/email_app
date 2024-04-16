@@ -67,7 +67,7 @@ def activate(request, uidb64, token):
 
 
 
-def login_view(request) :
+def login_view(request):
     form = LoginForm()
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -80,20 +80,25 @@ def login_view(request) :
                 form = LoginForm()
                 login(request, user)
                 if user_logged_in():
-                    messages.success(request, "Sie haben sich erfolgreich eingeloggt!")
-                    return redirect("index")
-    return render(request, "registration/login.html", {"form":form})
-    
-
+                    messages.success(request, "Sie haben sich erfolgreich eingeloggt!")  # Display login success message
+                    return redirect("profile")
+                else:
+                    messages.error(request, "Fehler beim Einloggen. Bitte überprüfen Sie Ihre Anmeldeinformationen.")  # Display login error message
+    return render(request, "registration/login.html", {"form": form})
 
 def logout(request):
     logout(request)
     if user_logged_out():
-        messages.success(request, "Sie wurden erfolgreich ausgeloggt!")
+        messages.success(request, "Sie wurden erfolgreich ausgeloggt!")  # Display logout success message
         return redirect("index")
+    else:
+        messages.error(request, "Fehler beim Ausloggen. Bitte versuchen Sie es erneut.")  # Display logout error message
 
 
 def index(request):
     messages_to_display = messages.get_messages(request)
 
     return render(request, "index.html", {"messages": messages_to_display} )
+
+def profile(request):
+    render(request, "profile.html")

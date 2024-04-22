@@ -56,19 +56,17 @@ def activate(request, uidb64, token):
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         user.save()
-        login(request, user)
 
         messages.success(request, "Ihr Account wurde erfolgreich aktiviert")
-        return redirect(reverse("login"))
+        return redirect("index")
     
     else:
         messages.error(request, "Aktivierungslink ist ungültig oder abgelaufen.")
         return redirect("index")
 
 
-@login_required
 def profile(request):
-    render(request, "profile.html")
+    return render(request, "profile.html")
 
 def login_view(request):
     form = LoginForm()
@@ -84,7 +82,7 @@ def login_view(request):
                 login(request, user)
                 if user_logged_in():
                     messages.success(request, "Sie haben sich erfolgreich eingeloggt!")  # Display login success message
-                    return render(request, "profile.html")
+                    return redirect("profile")
                 else:
                     messages.error(request, "Fehler beim Einloggen. Bitte überprüfen Sie Ihre Anmeldeinformationen.")  # Display login error message
     return render(request, "registration/login.html", {"form": form})

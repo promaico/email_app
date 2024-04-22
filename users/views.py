@@ -68,7 +68,7 @@ def activate(request, uidb64, token):
 
 @login_required
 def profile(request):
-    render(request, "users/profile.html")
+    render(request, "profile.html")
 
 def login_view(request):
     form = LoginForm()
@@ -84,7 +84,7 @@ def login_view(request):
                 login(request, user)
                 if user_logged_in():
                     messages.success(request, "Sie haben sich erfolgreich eingeloggt!")  # Display login success message
-                    return redirect("users-profile")
+                    return render(request, "profile.html")
                 else:
                     messages.error(request, "Fehler beim Einloggen. Bitte überprüfen Sie Ihre Anmeldeinformationen.")  # Display login error message
     return render(request, "registration/login.html", {"form": form})

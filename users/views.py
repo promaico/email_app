@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout, authenticate
 from django.urls import reverse
 from django.contrib.auth.signals import user_logged_in, user_logged_out
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -65,7 +66,9 @@ def activate(request, uidb64, token):
         return redirect("index")
 
 
-
+@login_required
+def profile(request):
+    render(request, "users/profile.html")
 
 def login_view(request):
     form = LoginForm()
@@ -81,7 +84,7 @@ def login_view(request):
                 login(request, user)
                 if user_logged_in():
                     messages.success(request, "Sie haben sich erfolgreich eingeloggt!")  # Display login success message
-                    return redirect("profile")
+                    return redirect("users-profile")
                 else:
                     messages.error(request, "Fehler beim Einloggen. Bitte überprüfen Sie Ihre Anmeldeinformationen.")  # Display login error message
     return render(request, "registration/login.html", {"form": form})
@@ -100,5 +103,4 @@ def index(request):
 
     return render(request, "index.html", {"messages": messages_to_display} )
 
-def profile(request):
-    render(request, "profile.html")
+

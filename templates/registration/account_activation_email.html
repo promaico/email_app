@@ -1,7 +1,8 @@
 {% autoescape off %}  
-Hey {{ user.first_name }},  
+Hey {{ user.first_name }} {{ user.last_name }},  
 
-
+diese E-Mail ist zur Verifizierung deines Kontos in der E-Mail Webapp.
 Klicke auf den Link unten, um deinen Account zu aktivieren:
+
 http://{{ domain }}{% url 'activate' uidb64=uid token=token %}  
 {% endautoescape %}  

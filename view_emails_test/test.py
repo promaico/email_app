@@ -1,44 +1,37 @@
-import imaplib
+from imapclient import IMAPClient
 import email
-from email.header import decode_header
-import datetime
+import quopri  # Importiere das quopri-Modul
 
-# Ihre Anmeldeinformationen
-username = 'tjark.jakob.de@gmail.com'
-password = 'hsmd eayd sssh rfgn'
-imap_url = 'imap.gmail.com'
 
-# Verbindung zum Server herstellen
-mail = imaplib.IMAP4_SSL(imap_url)
+# Verbindungsinformationen
+host = 'imap.gmail.com'  # Dein IMAP-Server
+user = 'tjark.jakob.de@gmail.com'  # Deine E-Mail-Adresse
+password = 'ahcl hyql elqc ratb'  # Dein Passwort
+ssl = True  # SSL verwenden (True oder False)
 
-# Anmelden
-mail.login(username, password)
 
-# Wählen Sie den Posteingang aus, den Sie durchsuchen möchten
-mail.select("inbox")
+# Verbindung zum IMAP-Server herstellen
+server = IMAPClient(host, use_uid=True, ssl=ssl)
+server.login(user, password)
 
-# Suchen Sie alle E-Mails
-result, data = mail.uid('search', None, "ALL")
+# Den "gelesen" Ordner auswählen
+inboxInfo = server.select_folder('INBOX')
 
-# Erhalten Sie die Liste der E-Mail-IDs
-email_ids = data[0].split()
-latest_10_email_ids = email_ids[-10:]
+# Die letzten 10 Nachrichten suchen (nicht gelöscht)
+messages = server.search(['FROM', 'tjark.schulte@gy-cfg.de'])
 
-for id in latest_10_email_ids:
-    result, email_data = mail.uid('fetch', id, '(BODY.PEEK[HEADER])')
-    raw_email = email_data[0][1].decode("utf-8")
-    email_message = email.message_from_string(raw_email)
+# Nachrichten abrufen (inklusive BODY[TEXT])
+response = server.fetch(messages, ['BODY[TEXT]'])
 
-    # Header-Details
-    date_tuple = email.utils.parsedate_tz(email_message['Date'])
-    if date_tuple:
-        local_date = datetime.datetime.fromtimestamp(email.utils.mktime_tz(date_tuple))
-        local_message_date = "%s" %(str(local_date.strftime("%a, %d %b %Y %H:%M:%S")))
-    email_from = str(decode_header(email_message['From'])[0][0])
-    email_to = str(decode_header(email_message['To'])[0][0])
-    subject = str(decode_header(email_message['Subject'])[0][0])
+# Nachrichten durchgehen und anzeigen
+for msgid, data in response.items():
+    # Entschlüssle den Text aus den Bytes
+    decoded_text = quopri.decodestring(data[b'BODY[TEXT]']).decode('utf-8')
 
-    print('Von : ' + email_from + '\n')
-    print('An : ' + email_to + '\n')
-    print('Betreff : ' + subject + '\n')
-    print('Datum : ' + local_message_date + '\n')
+    # Zeige den entschlüsselten Text an
+    print(f"Nachricht {msgid}:")
+    print(f"Inhalt:\n{decoded_text}\n")
+
+# Verbindung schließen
+server.logout()
+

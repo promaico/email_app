@@ -4,20 +4,19 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 class RegistrationForm(UserCreationForm):
-    email = forms.EmailField(required=True)
 
     class Meta:
         model = User
-        fields = ["username", "first_name", "last_name", "email", "password1", "password2"]
+        fields = ["username", "first_name", "last_name", "password1", "password2"]
 
     def clean_email(self):
-        email = self.cleaned_data.get("email")
-        if User.objects.filter(email=email).exists():
-            raise ValidationError("Es existiert bereits ein Account mit dieser E-Mail Adresse!")
-        return email
+        username = self.cleaned_data.get("username")
+        if User.objects.filter(username=username).exists():
+            raise ValidationError("Es existiert bereits ein Account mit diesem Benutzernamen!")
+        return username
     
 
 class LoginForm(AuthenticationForm):
     class Meta:
         model = User
-        fields = ["email", "password"]  
+        fields = ["username", "password"]  

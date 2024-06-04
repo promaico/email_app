@@ -5,6 +5,7 @@ import ssl
 import quopri
 from dotenv import load_dotenv
 import os
+from .forms import Email_Form
 # Create your views here.
 
 
@@ -13,17 +14,21 @@ def profile(request):
 
 
 def profile_email(request):
-
     load_dotenv()
+
+
 
     host = 'imap.gmail.com'
     user = os.environ.get("MAIL")
     password = os.environ.get("PASS")
-    
+
     email_subject = []
+    email_sender = []
     email_content = []
     email_date = []
 
+
+    MAILSEARCH = "tjark.schulte@gy-cfg.de"
     FOLDER = "INBOX"
 
     logging.basicConfig(
@@ -39,20 +44,45 @@ def profile_email(request):
         with IMAPClient(host, ssl_context=ssl_context) as server:
             server.login(user, password)
             select_info = server.select_folder(FOLDER)
-            # Suche nach ungelesenen E-Mails
-            messages = server.search(['SEEN'])
+            print(f'%d Nachrichten in {FOLDER.lower().capitalize()}' % select_info[b'EXISTS'])
+            print("\n")
 
-            # Begrenze die Anzahl der angezeigten E-Mails auf 10
-            max_displayed_emails = 10
-            for msg_id, data in server.fetch(messages[:max_displayed_emails], ['ENVELOPE', 'BODY[TEXT]']).items():
+            messages = server.search(['FROM', MAILSEARCH])
+            print(f"%d Nachrichten von {MAILSEARCH}" % len(messages))
+            print("\n")
+
+            for msgid, data in server.fetch(messages, ['ENVELOPE']).items():
                 envelope = data[b'ENVELOPE']
-                decoded_text = quopri.decodestring(data[b'BODY[TEXT]']).decode('latin-1')  # Ändere die Codierung hier
-                decoded_subject = envelope.subject.decode("utf-8")
-                email_subject.append(decoded_subject)
-                email_content.append(decoded_text)
+                print('ID #%d: "%s" received %s' % (msgid, envelope.subject.decode(), envelope.date))
+
+            # Nachrichten abrufen (inklusive BODY[TEXT])
+            response = server.fetch(messages, ['BODY[TEXT]'])
+
+            # Nachrichten durchgehen und anzeigen
+            for msgid, data in response.items():
+                # Entschlüssle den Text aus den Bytes
+                decoded_text = quopri.decodestring(data[b'BODY[TEXT]']).decode('utf-8')
+
+                # Zeige den entschlüsselten Text an
                 
+                
+                print(f"Betreff: \n{envelope.subject.decode()}")
+                print(f"Inhalt: \n{decoded_text}\n")
+
+            # Start IDLE mode
+            server.idle()
+            print("Connection is now in IDLE mode, send yourself an email or quit with ^c")
+
+            while True:
+                try:
+                    # Wait for up to 30 seconds for an IDLE response
+                    responses = server.idle_check(timeout=30)
+                    print("Server sent:", responses if responses else "nothing")
+                except KeyboardInterrupt:
+                    break
+
+            server.idle_done()
+            print("\nIDLE mode done")
     except Exception as e:
-        print(f"Fehler: {e}")
-        
-        
-    return render(request, "profile.html", email_subject, email_content)
+        print(f"Error: {e}")
+    return render(request, "profile.html", email_subject, email_content, {"form":form})

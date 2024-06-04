@@ -14,6 +14,7 @@ def profile(request):
 
 
 def profile_email(request):
+    form = Email_Form
     load_dotenv()
 
 
@@ -69,20 +70,6 @@ def profile_email(request):
                 print(f"Betreff: \n{envelope.subject.decode()}")
                 print(f"Inhalt: \n{decoded_text}\n")
 
-            # Start IDLE mode
-            server.idle()
-            print("Connection is now in IDLE mode, send yourself an email or quit with ^c")
-
-            while True:
-                try:
-                    # Wait for up to 30 seconds for an IDLE response
-                    responses = server.idle_check(timeout=30)
-                    print("Server sent:", responses if responses else "nothing")
-                except KeyboardInterrupt:
-                    break
-
-            server.idle_done()
-            print("\nIDLE mode done")
     except Exception as e:
         print(f"Error: {e}")
-    return render(request, "profile.html", email_subject, email_content, {"form":form})
+    return render(request, "profile_email.html", email_subject, email_content, {"form":form})

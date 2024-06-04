@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{%load crispy_forms_tags %} 
 
 {% block title %}Profil{% endblock title %}
 
@@ -10,13 +11,16 @@
 
 
 
-{% for i in email_subject %}
-    {{ i }}
-{% endfor %}
+<div class="email_form">
 
-{% for i in email_content %}
-{{ i }}
-{% endfor %}
+    <form method="get" action="{% url 'profile_email' %}">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" value=Submit" class="btn btn-primary">
+    </form>
+
+</div>
+
 
 
 

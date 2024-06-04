@@ -6,5 +6,6 @@ from .views import *
 
 urlpatterns = [
     path("accounts/profile/", views.profile, name="profile" ),
+    path("accounts/profile/emails/",views.profile_email, name="profile_email")
 ]
 

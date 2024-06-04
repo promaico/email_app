@@ -1,8 +1,12 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %} 
+
+
 
 {% block title %} Registrierung {% endblock title %}
 
 {% block content %} 
+
 
 
 <h1>
@@ -14,8 +18,8 @@
 
     <form method="post" action=" {%url "register" %} ">
         {% csrf_token %}
-        {{form.as_p}}
-        <button type="submit">Register</button>
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary">Register</button>
 
     </form>
 

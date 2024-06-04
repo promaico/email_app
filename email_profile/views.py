@@ -12,7 +12,7 @@ def profile(request):
     return render(request, "profile.html")
 
 
-def profile(request):
+def profile_email(request):
 
     load_dotenv()
 

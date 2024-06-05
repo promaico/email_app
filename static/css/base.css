@@ -54,6 +54,10 @@ h1{
     box-shadow: 5px 5px 6px 0px rgba(0,0,0,0.36);
 }
 
+small ul li{
+    font-size: 14px !important;
+}
+
 .form_container{
     height: 80dvh !important;
     align-items: center !important;

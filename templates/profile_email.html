@@ -1,9 +1,28 @@
-{% extends "profile.html" %}
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %} 
+{% load static %}
+
 
 {% block content %}
 
+<h1>
+    Profil von {{user.first_name}} {{user.last_name}}
+</h1>
 
+{% for element in emails %}
+    {% for key, value in element.items %}
+        <div class="row">
+            <div class="col-3">
+                {{ key }}
+            </div>
+            <div class="col-9">
+                {{ value }}
+            </div>
+        </div>
+    {% endfor %}
 
+{% endfor %}
 
 
 {% endblock content %}
